@@ -28,6 +28,10 @@ public class Livre {
         return EMPRUNT_MAX;
     }
 
+    public String getTitre() {
+        return titre;
+    }
+
     @Override
     public String toString(){
         return String.format("titre: %s%n- auteur: %s%n- catégorie: %s%n- identifiant: %d%n- status: %s",

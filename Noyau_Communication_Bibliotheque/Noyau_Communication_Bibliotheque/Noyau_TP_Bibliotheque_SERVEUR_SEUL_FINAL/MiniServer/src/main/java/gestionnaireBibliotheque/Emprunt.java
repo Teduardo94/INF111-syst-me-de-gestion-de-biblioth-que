@@ -47,6 +47,6 @@ public class Emprunt {
     public String toString(){
         return String.format("id: %d%n- livre: %s%n- utilisateur: %d%n- " +
                         "jour de l'emprunt: %d%n- jour de retour prévu: %d%n- status: %s",
-                id,livre,idUtilisateur,jourEmprunt,jourRetourPrevu,status);
+                id,livre.getTitre(),idUtilisateur,jourEmprunt,jourRetourPrevu,status);
     }
 }
