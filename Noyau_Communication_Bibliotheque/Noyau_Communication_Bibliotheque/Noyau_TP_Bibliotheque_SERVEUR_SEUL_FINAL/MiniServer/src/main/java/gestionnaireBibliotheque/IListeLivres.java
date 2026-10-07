@@ -6,5 +6,5 @@ public interface IListeLivres {
     public Livre rechercher(int idLivre);
     public boolean contient(int idLivre);
     public int taille();
-    public boolean estVie();
+    public boolean estVide();
 }

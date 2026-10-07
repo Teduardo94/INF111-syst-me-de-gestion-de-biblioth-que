@@ -32,6 +32,10 @@ public class Livre {
         return titre;
     }
 
+    public int getIdentifiant() {
+        return identifiant;
+    }
+
     @Override
     public String toString(){
         return String.format("titre: %s%n- auteur: %s%n- catégorie: %s%n- identifiant: %d%n- status: %s",
