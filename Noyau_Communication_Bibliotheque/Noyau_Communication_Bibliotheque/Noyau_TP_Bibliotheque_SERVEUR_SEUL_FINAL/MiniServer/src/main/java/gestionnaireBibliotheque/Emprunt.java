@@ -25,6 +25,10 @@ public class Emprunt {
         this.status = StatutEmprunt.EN_COURS;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public boolean estEnRetard(int jourActuel){
         return jourRetourPrevu > jourActuel;
     }

@@ -84,6 +84,8 @@ public class ListeLivres implements IListeLivres, Iterable<Livre>{
 
     @Override
     public String toString(){
-        return liste.toString();
+        if(liste!=null)
+            return liste.toString();
+        return null;
     }
 }
