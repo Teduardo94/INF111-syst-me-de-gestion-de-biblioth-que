@@ -71,6 +71,8 @@ public class ListeEmprunts implements IListeEmprunts, Iterable<Emprunt>{
 
     @Override
     public Iterator<Emprunt> iterator() {
+        if(liste != null)
+            return liste.iterator();
         return null;
     }
 

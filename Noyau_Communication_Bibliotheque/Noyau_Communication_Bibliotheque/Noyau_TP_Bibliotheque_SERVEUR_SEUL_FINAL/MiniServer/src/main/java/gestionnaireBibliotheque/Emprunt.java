@@ -8,6 +8,7 @@ public class Emprunt {
     private int idUtilisateur;
     private int jourEmprunt;
     private int jourRetourPrevu;
+    private int jourRetour;
     private StatutEmprunt status;
 
     private static int prochainID(){
@@ -22,6 +23,7 @@ public class Emprunt {
         this.idUtilisateur = idUtilisateur;
         this.jourEmprunt = jourEmprunt;
         this.jourRetourPrevu = jourEmprunt + livre.getEmpruntMax();
+        this.jourRetour = 0;
         this.status = StatutEmprunt.EN_COURS;
     }
 
@@ -29,9 +31,7 @@ public class Emprunt {
         return id;
     }
 
-    public boolean estEnRetard(int jourActuel){
-        return jourRetourPrevu > jourActuel;
-    }
+    public boolean estEnRetard(int jourActuel){return jourRetourPrevu < jourActuel;}
 
     public int calculerJoursRetard(int jourActuel){
         if (!estEnRetard(jourActuel))
@@ -40,11 +40,11 @@ public class Emprunt {
     }
 
     public void retourner(int jourRetour){
+        this.jourRetour = jourRetour;
         if(!estEnRetard(jourRetour))
             this.status = StatutEmprunt.RETOURNE;
         else
             this.status = StatutEmprunt.EN_RETARD;
-        this.jourRetourPrevu = jourRetour;
     }
 
     @Override
