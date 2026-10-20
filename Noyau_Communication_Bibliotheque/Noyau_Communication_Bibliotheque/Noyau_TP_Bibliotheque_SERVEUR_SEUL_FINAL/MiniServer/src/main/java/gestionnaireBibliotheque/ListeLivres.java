@@ -69,17 +69,9 @@ public class ListeLivres implements IListeLivres, Iterable<Livre>{
 
     @Override
     public Iterator<Livre> iterator() {
-        return new Iterator<Livre>() {
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
-
-            @Override
-            public Livre next() {
-                return null;
-            }
-        };
+        if(liste != null)
+            return this.liste.iterator();
+        return null;
     }
 
     @Override
