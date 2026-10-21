@@ -43,6 +43,10 @@ public class FilePrioriteReservations {
             return 0;
     }
 
+    public PriorityQueue<Reservation> getQueue() {
+        return queue;
+    }
+
     @Override
     public String toString(){
         String liste;

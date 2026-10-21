@@ -1,0 +1,140 @@
+<html>
+<head>
+<title>Utilisateur.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #2aacb8;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Utilisateur.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">gestionnaireBibliotheque</span><span class="s2">;</span>
+
+<span class="s0">public abstract class </span><span class="s1">Utilisateur </span><span class="s2">{</span>
+    <span class="s0">private int </span><span class="s1">id</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">String nom</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">ListeEmprunts empruntsEnCours</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">ListeEmprunts empruntsTermines</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">FilePrioriteReservations reservations</span><span class="s2">;</span>
+    <span class="s0">private static final int </span><span class="s1">MAX_RESERVATIONS </span><span class="s2">= </span><span class="s3">10</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">Utilisateur</span><span class="s2">(</span><span class="s0">int </span><span class="s1">id</span><span class="s2">, </span><span class="s1">String nom</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">id </span><span class="s2">= </span><span class="s1">id</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">nom </span><span class="s2">= </span><span class="s1">nom</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">empruntsEnCours </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ListeEmprunts</span><span class="s2">();</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">empruntsTermines </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ListeEmprunts</span><span class="s2">();</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">reservations </span><span class="s2">= </span><span class="s0">new </span><span class="s1">FilePrioriteReservations</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">ajouterEmpruntEnCours</span><span class="s2">(</span><span class="s1">Emprunt emprunt</span><span class="s2">){</span>
+        <span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">ajouter</span><span class="s2">(</span><span class="s1">emprunt</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">ajouterEmpruntTermine</span><span class="s2">(</span><span class="s1">Emprunt emprunt</span><span class="s2">){</span>
+        <span class="s1">empruntsTermines</span><span class="s2">.</span><span class="s1">ajouter</span><span class="s2">(</span><span class="s1">emprunt</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Emprunt supprimerEmpruntEnCours</span><span class="s2">(</span><span class="s0">int </span><span class="s1">idEmprunt</span><span class="s2">){</span>
+        <span class="s0">if</span><span class="s2">(</span><span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">contient</span><span class="s2">(</span><span class="s1">idEmprunt</span><span class="s2">)){</span>
+            <span class="s1">Emprunt emprunt </span><span class="s2">= </span><span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">rechercher</span><span class="s2">(</span><span class="s1">idEmprunt</span><span class="s2">);</span>
+            <span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">supprimer</span><span class="s2">(</span><span class="s1">idEmprunt</span><span class="s2">);</span>
+            <span class="s0">return </span><span class="s1">emprunt</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s0">return null</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Emprunt rechercherEmpruntEnCours</span><span class="s2">(</span><span class="s0">int </span><span class="s1">idEmprunt</span><span class="s2">){</span>
+        <span class="s0">if</span><span class="s2">(</span><span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">contient</span><span class="s2">(</span><span class="s1">idEmprunt</span><span class="s2">)){</span>
+            <span class="s1">Emprunt emprunt </span><span class="s2">= </span><span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">rechercher</span><span class="s2">(</span><span class="s1">idEmprunt</span><span class="s2">);</span>
+            <span class="s0">return </span><span class="s1">emprunt</span><span class="s2">;</span>
+        <span class="s2">}</span><span class="s0">else</span><span class="s2">{</span>
+            <span class="s0">return null</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Emprunt rechercherEmpruntTermine</span><span class="s2">(</span><span class="s0">int </span><span class="s1">idEmprunt</span><span class="s2">){</span>
+        <span class="s0">if</span><span class="s2">(</span><span class="s1">empruntsTermines</span><span class="s2">.</span><span class="s1">contient</span><span class="s2">(</span><span class="s1">idEmprunt</span><span class="s2">)){</span>
+            <span class="s1">Emprunt emprunt </span><span class="s2">= </span><span class="s1">empruntsTermines</span><span class="s2">.</span><span class="s1">rechercher</span><span class="s2">(</span><span class="s1">idEmprunt</span><span class="s2">);</span>
+            <span class="s0">return </span><span class="s1">emprunt</span><span class="s2">;</span>
+        <span class="s2">}</span><span class="s0">else</span><span class="s2">{</span>
+            <span class="s0">return null</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public boolean </span><span class="s1">aDesEmpruntsEnCours</span><span class="s2">(){</span>
+        <span class="s0">if</span><span class="s2">(</span><span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">estVide</span><span class="s2">()){</span>
+            <span class="s0">return false</span><span class="s2">;</span>
+        <span class="s2">}</span><span class="s0">else</span><span class="s2">{</span>
+            <span class="s0">return true</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public abstract int </span><span class="s1">nombreMaxEmprunts</span><span class="s2">();</span>
+
+    <span class="s0">public boolean </span><span class="s1">peutEmprunter</span><span class="s2">(){</span>
+        <span class="s0">if</span><span class="s2">(</span><span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">taille</span><span class="s2">() &lt; </span><span class="s1">nombreMaxEmprunts</span><span class="s2">()){</span>
+            <span class="s0">return true</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s0">return false</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public boolean </span><span class="s1">possedeReservationEnAttentePourLivre</span><span class="s2">(</span><span class="s0">int </span><span class="s1">idLivre</span><span class="s2">){</span>
+        <span class="s0">for</span><span class="s2">(</span><span class="s1">Reservation res </span><span class="s2">: </span><span class="s1">reservations</span><span class="s2">.</span><span class="s1">getQueue</span><span class="s2">()){</span>
+            <span class="s0">if</span><span class="s2">(</span><span class="s1">res</span><span class="s2">.</span><span class="s1">getLivre</span><span class="s2">().</span><span class="s1">getIdentifiant</span><span class="s2">() == </span><span class="s1">idLivre </span><span class="s2">&amp;&amp; </span><span class="s1">res</span><span class="s2">.</span><span class="s1">getStatus</span><span class="s2">() == </span><span class="s1">StatutReservation</span><span class="s2">.</span><span class="s1">EN_ATTENTE</span><span class="s2">){</span>
+                <span class="s0">return true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public boolean </span><span class="s1">ajouterReservation</span><span class="s2">(</span><span class="s1">Reservation reservation</span><span class="s2">){</span>
+        <span class="s0">if</span><span class="s2">(</span><span class="s1">reservations</span><span class="s2">.</span><span class="s1">taille</span><span class="s2">() &lt; </span><span class="s1">MAX_RESERVATIONS</span><span class="s2">){</span>
+            <span class="s1">reservations</span><span class="s2">.</span><span class="s1">ajouter</span><span class="s2">(</span><span class="s1">reservation</span><span class="s2">);</span>
+            <span class="s0">return true</span><span class="s2">;</span>
+        <span class="s2">}</span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s0">return false</span><span class="s2">;</span>
+        <span class="s2">}</span>
+
+    <span class="s2">}</span>
+
+    <span class="s0">public int </span><span class="s1">getId</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">id</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public abstract double </span><span class="s1">calculerPenalite</span><span class="s2">(</span><span class="s0">int </span><span class="s1">joursRetard</span><span class="s2">);</span>
+
+    <span class="s0">public abstract </span><span class="s1">TypeUtilisateur getTypeUtilisateur</span><span class="s2">();</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">String toString</span><span class="s2">() {</span>
+        <span class="s0">int </span><span class="s1">nbreReservationEnAttente </span><span class="s2">= </span><span class="s3">0</span><span class="s2">;</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s3">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s1">reservations</span><span class="s2">.</span><span class="s1">taille</span><span class="s2">(); </span><span class="s1">i</span><span class="s2">++){</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">reservations</span><span class="s2">.</span><span class="s1">taille</span><span class="s2">() &lt; </span><span class="s1">MAX_RESERVATIONS</span><span class="s2">){</span>
+                <span class="s1">nbreReservationEnAttente</span><span class="s2">++;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return </span><span class="s4">&quot;Utilisateur{&quot; </span><span class="s2">+</span>
+                <span class="s4">&quot;type : '&quot; </span><span class="s2">+ </span><span class="s1">getTypeUtilisateur</span><span class="s2">() + </span><span class="s4">'</span><span class="s0">\'</span><span class="s4">' </span><span class="s2">+</span>
+                <span class="s4">&quot;, id : '&quot; </span><span class="s2">+ </span><span class="s1">id </span><span class="s2">+ </span><span class="s4">'</span><span class="s0">\'</span><span class="s4">' </span><span class="s2">+</span>
+                <span class="s4">&quot;, nom : '&quot; </span><span class="s2">+ </span><span class="s1">nom </span><span class="s2">+ </span><span class="s4">'</span><span class="s0">\'</span><span class="s4">' </span><span class="s2">+</span>
+                <span class="s4">&quot;, nombre d'emprunts en cours : '&quot; </span><span class="s2">+ </span><span class="s1">empruntsEnCours</span><span class="s2">.</span><span class="s1">taille</span><span class="s2">() + </span><span class="s4">'</span><span class="s0">\'</span><span class="s4">' </span><span class="s2">+</span>
+                <span class="s4">&quot;, nombre d'emprunts termines : '&quot; </span><span class="s2">+ </span><span class="s1">empruntsTermines</span><span class="s2">.</span><span class="s1">taille</span><span class="s2">() + </span><span class="s4">'</span><span class="s0">\'</span><span class="s4">' </span><span class="s2">+</span>
+                <span class="s4">&quot;, reservations en attente : '&quot; </span><span class="s2">+ </span><span class="s1">nbreReservationEnAttente </span><span class="s2">+ </span><span class="s4">'</span><span class="s0">\'</span><span class="s4">' </span><span class="s2">+</span>
+                <span class="s4">'}'</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

@@ -32,6 +32,14 @@ public class Reservation implements Comparable<Reservation> {
         this.status = StatutReservation.EN_ATTENTE;
     }
 
+    public Livre getLivre() {
+        return livre;
+    }
+
+    public StatutReservation getStatus() {
+        return status;
+    }
+
     @Override
     public int compareTo(Reservation obj) {
         int comparerType = obj.typeUtilisateur.compareTo(this.typeUtilisateur);
