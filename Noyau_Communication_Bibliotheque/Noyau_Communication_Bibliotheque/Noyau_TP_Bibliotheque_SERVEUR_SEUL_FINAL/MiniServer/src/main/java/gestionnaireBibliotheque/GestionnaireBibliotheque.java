@@ -52,7 +52,7 @@ public class GestionnaireBibliotheque {
             case "INFO":
                 return traiterINFO(idConnexion, argument);
             case "PENALTY":
-//                return traiterPENALTY(idConnexion,argument);
+                return traiterPENALTY(idConnexion,argument);
             case "EXIT":
                 return traiterEXIT(idConnexion);
         }

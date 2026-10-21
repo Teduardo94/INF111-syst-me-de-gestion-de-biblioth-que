@@ -108,12 +108,20 @@ public abstract class Utilisateur {
 
     @Override
     public String toString() {
+        int nbreReservationAttente = 0;
+        for(Reservation reservation : reservations.getQueue()){
+            if(reservation.getStatus() == StatutReservation.EN_ATTENTE){
+                nbreReservationAttente++;
+            }
+        }
+
         return "Utilisateur{" +
                 "type : '" + getTypeUtilisateur() + '\'' +
                 ", id : '" + id + '\'' +
                 ", nom : '" + nom + '\'' +
                 ", nombre d'emprunts en cours : '" + empruntsEnCours.taille() + '\'' +
                 ", nombre d'emprunts termines : '" + empruntsTermines.taille() + '\'' +
+                ", nombre de reservations en attente : '" + nbreReservationAttente + "\''" +
                 '}';
     }
 }
