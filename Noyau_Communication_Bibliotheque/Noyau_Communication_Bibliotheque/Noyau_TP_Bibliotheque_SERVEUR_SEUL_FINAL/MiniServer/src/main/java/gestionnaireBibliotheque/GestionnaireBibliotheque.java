@@ -29,15 +29,15 @@ public class GestionnaireBibliotheque {
     public String traiterCommande(int idConnexion, String typeCommande, String argument){
         switch (typeCommande){
             case "REGISTER":
-                break;
+                return traiterREGISTER(argument);
             case "ID":
-                break;
+                return traiterID(idConnexion, argument);
             case "BOOKS":
-                break;
+                return traiterBOOKS();
             case "BORROW":
-                break;
+                return traiterBORROW(idConnexion, argument);
             case "RETURN":
-                break;
+                return traiterRETURN(idConnexion, argument);
             case "RESERVE":
                 break;
             case "INFO":
@@ -45,7 +45,7 @@ public class GestionnaireBibliotheque {
             case "PENALTY":
                 break;
             case "EXIT":
-                break;
+                return traiterEXIT(idConnexion);
             default:
                 return "";
         }
@@ -74,42 +74,6 @@ public class GestionnaireBibliotheque {
         utilisateursIdentifies.put(idConnexion,utilisateur);
 
         return "AUTHORIZED " + idUtilisateur + " " + utilisateur.getNom();
-    }
-
-    public String traiterREGISTER(String argument){
-        if(argument == null)
-            return Erreur.BAD_ARGUMENT_ERROR.name();
-
-        String[] parts = argument.trim().split("\\s+");
-        if(parts.length < 3)
-            return Erreur.BAD_ARGUMENT_ERROR.name();
-
-        int idUtilisateur;
-        try {
-            idUtilisateur = Integer.parseInt(parts[0]);
-        }catch (Exception e){
-            return Erreur.BAD_ARGUMENT_ERROR.name();
-        }
-
-        if (utilisateurs.containsKey(idUtilisateur))
-            return Erreur.BAD_ARGUMENT_ERROR.name();
-
-        String typeUtilisateur = parts[1];
-        String nomUtilisateur = parts[2];
-
-        Utilisateur utilisateur;
-        if (typeUtilisateur.equalsIgnoreCase("ETUDIANT")){
-            utilisateur = new Etudiant(idUtilisateur,nomUtilisateur);
-        } else if (typeUtilisateur.equalsIgnoreCase("PERSONNEL")){
-            utilisateur = new Personnel(idUtilisateur,nomUtilisateur);
-        } else if (typeUtilisateur.equalsIgnoreCase("PROFESSEUR")) {
-            utilisateur = new Professeur(idUtilisateur,nomUtilisateur);
-        } else {
-            return Erreur.BAD_ARGUMENT_ERROR.name();
-        }
-
-        utilisateurs.put(idUtilisateur,utilisateur);
-        return "REGISTERED " + idUtilisateur + " " + nomUtilisateur;
     }
 
     public String traiterBOOKS(){
@@ -156,14 +120,14 @@ public class GestionnaireBibliotheque {
 
         Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
 
-        if(utilisateur.aAtteintLimiteEmprunts())
+        if(!utilisateur.peutEmprunter())
             return Erreur.BORROW_LIMIT_ERROR.name();
 
         Emprunt emprunt = new Emprunt(livre, utilisateur.getId(), jourEmprunt);
-        utilisateur.ajouterEmprunt(emprunt);
+        utilisateur.ajouterEmpruntEnCours(emprunt);
         livre.setStatus(StatutLivre.EMPRUNTE);
 
-        return "BORROW_OK" + emprunt.getId() + " " + livre.getIdentifiant() + " " + emprunt.getJourRetourPrevu();
+        return "BORROW_OK " + emprunt.getId() + " " + livre.getIdentifiant() + " " + emprunt.getJourRetourPrevu();
     }
 
     public String traiterRETURN(int idConnexion, String argument){
@@ -200,14 +164,100 @@ public class GestionnaireBibliotheque {
 
         if(reservation == null) {
             livre.setStatus(StatutLivre.DISPONIBLE);
-            return "RETURN_OK" + emprunt.getId() + " " + livre.getIdentifiant();
+            return "RETURN_OK " + emprunt.getId() + " " + livre.getIdentifiant();
         } else {
             reservation.setStatus(StatutReservation.ATTRIBUEE);
             Emprunt nouvelEmprunt = new Emprunt(livre, reservation.getIdUtilisateur(),jourRetour);
             Utilisateur utilisateurReservation = utilisateurs.get(reservation.getIdUtilisateur());
             utilisateurReservation.ajouterEmprunt(nouvelEmprunt);
-            return "RESEVATION_ASSIGNED " + emprunt.getId() + " " + livre.getIdentifiant();
+            return "RESERVATION_ASSIGNED " + emprunt.getId() + " " + livre.getIdentifiant();
         }
+    }
+
+    public String traiterRESERVE(int idConnexion, String argument){
+        if(!utilisateursIdentifies.containsKey(idConnexion))
+            return Erreur.AUTHENTICATION_ERROR.name();
+
+        if(argument == null)
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+
+        int idLivre;
+        try {
+            idLivre = Integer.parseInt(argument);
+        } catch (Exception e){
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+        }
+
+        Livre livre = livres.rechercher(idLivre);
+        if (livre == null)
+            return Erreur.BOOK_NOT_FOUND_ERROR.name();
+
+        if(livre.getStatus() == StatutLivre.DISPONIBLE)
+            return Erreur.BOOK_ALREADY_AVAILABLE_ERROR.name();
+
+        Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
+        if(!utilisateur.ajouterReservation())
+            return Erreur.BORROW_LIMIT_ERROR.name();
+    }
+
+    public String traiterINFO(int idConnexion, String argument){
+        if(!utilisateursIdentifies.containsKey(idConnexion))
+            return Erreur.AUTHENTICATION_ERROR.name();
+
+        if(argument == null)
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+
+        int idEmprunt;
+        try {
+            idEmprunt = Integer.parseInt(argument);
+        } catch (Exception e){
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+        }
+
+
+    }
+
+    public String traiterREGISTER(String argument){
+        if(argument == null)
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+
+        String[] parts = argument.trim().split("\\s+");
+        if(parts.length < 3)
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+
+        int idUtilisateur;
+        try {
+            idUtilisateur = Integer.parseInt(parts[0]);
+        }catch (Exception e){
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+        }
+
+        if (utilisateurs.containsKey(idUtilisateur))
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+
+        String typeUtilisateur = parts[1];
+        String nomUtilisateur = parts[2];
+
+        Utilisateur utilisateur;
+        if (typeUtilisateur.equalsIgnoreCase("ETUDIANT")){
+            utilisateur = new Etudiant(idUtilisateur,nomUtilisateur);
+        } else if (typeUtilisateur.equalsIgnoreCase("PERSONNEL")){
+            utilisateur = new Personnel(idUtilisateur,nomUtilisateur);
+        } else if (typeUtilisateur.equalsIgnoreCase("PROFESSEUR")) {
+            utilisateur = new Professeur(idUtilisateur,nomUtilisateur);
+        } else {
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+        }
+
+        utilisateurs.put(idUtilisateur,utilisateur);
+        return "REGISTERED " + idUtilisateur + " " + nomUtilisateur;
+    }
+
+    public String traiterEXIT(int idConnexion){
+        if(!utilisateursIdentifies.containsKey(idConnexion))
+            return Erreur.AUTHENTICATION_ERROR.name();
+        utilisateursIdentifies.remove(idConnexion);
+        return "END";
     }
 
 }
