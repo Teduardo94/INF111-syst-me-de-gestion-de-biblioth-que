@@ -45,4 +45,12 @@ public class Reservation implements Comparable<Reservation> {
         return String.format("Reservation : %d%n- Livre: %s%n- Utilisateur: %s%n- type: %s%n- Ordre de résérvation: %d%n- Statut: %s",
                 id,livre.getTitre(),idUtilisateur,typeUtilisateur,ordreReservation,status);
     }
+
+    public StatutReservation getStatus() {
+        return status;
+    }
+
+    public Livre getLivre() {
+        return livre;
+    }
 }
