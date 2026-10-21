@@ -11,7 +11,7 @@ public class GestionnaireBibliotheque {
 
     public GestionnaireBibliotheque() {
         this.utilisateurs = new HashMap<>();
-        this.utilisateursIdentifies = new HashMap<>();
+        this.utilisateursAuthentifies = new HashMap<>();
         this.livres = new ListeLivres();
         this.reservationsEnAttente = new FilePrioriteReservations();
 
@@ -220,7 +220,7 @@ public class GestionnaireBibliotheque {
         if(!utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
 
-        Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
+        Utilisateur utilisateur = utilisateursAuthentifies.get(idConnexion);
         if(argument == null){
             StringBuilder sb = new StringBuilder().append("INFO ").append(utilisateur.getEmpruntsEnCours().taille());
             for(Emprunt emprunt : utilisateur.getEmpruntsEnCours()){
