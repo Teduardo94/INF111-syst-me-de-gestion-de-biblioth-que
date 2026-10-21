@@ -198,6 +198,13 @@ public class GestionnaireBibliotheque {
         Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
         if(!utilisateur.peutEmprunter())
             return Erreur.BORROW_LIMIT_ERROR.name();
+
+        if(utilisateur.possedeReservationEnAttentePourLivre(idLivre))
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+
+        Reservation nouvelleRes = new Reservation(livre,utilisateur.getId(),utilisateur.getTypeUtilisateur());
+        reservationsEnAttente.ajouter(nouvelleRes);
+        return "RESERVATION_OK" + nouvelleRes.getId() + " " + livre.getIdentifiant();
     }
 
     public String traiterINFO(int idConnexion, String argument){
@@ -213,7 +220,7 @@ public class GestionnaireBibliotheque {
         } catch (Exception e){
             return Erreur.BAD_ARGUMENT_ERROR.name();
         }
-
+        return "";
     }
 
     public String traiterREGISTER(String argument){

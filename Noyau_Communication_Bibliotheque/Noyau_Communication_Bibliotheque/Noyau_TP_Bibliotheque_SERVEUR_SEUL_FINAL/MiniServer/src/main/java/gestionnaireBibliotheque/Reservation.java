@@ -32,6 +32,10 @@ public class Reservation implements Comparable<Reservation> {
         this.status = StatutReservation.EN_ATTENTE;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public void setStatus(StatutReservation status) {
         this.status = status;
     }
