@@ -20,8 +20,8 @@ public abstract class Utilisateur {
         return nom;
     }
 
-    public FilePrioriteReservations getReservations() {
-        return reservations;
+    public ListeEmprunts getEmpruntsEnCours() {
+        return empruntsEnCours;
     }
 
     public void ajouterEmpruntEnCours(Emprunt emprunt){

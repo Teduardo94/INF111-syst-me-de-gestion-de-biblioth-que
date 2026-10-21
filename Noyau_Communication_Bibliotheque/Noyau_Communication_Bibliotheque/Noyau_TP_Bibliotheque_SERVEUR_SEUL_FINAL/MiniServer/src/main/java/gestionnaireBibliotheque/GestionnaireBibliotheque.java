@@ -39,9 +39,9 @@ public class GestionnaireBibliotheque {
             case "RETURN":
                 return traiterRETURN(idConnexion, argument);
             case "RESERVE":
-                break;
+                return traiterRESERVE(idConnexion,argument);
             case "INFO":
-                break;
+                return traiterINFO(idConnexion, argument);
             case "PENALTY":
                 break;
             case "EXIT":
@@ -211,8 +211,19 @@ public class GestionnaireBibliotheque {
         if(!utilisateursIdentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
 
-        if(argument == null)
-            return Erreur.BAD_ARGUMENT_ERROR.name();
+        Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
+        if(argument == null){
+            StringBuilder sb = new StringBuilder().append("INFO ").append(utilisateur.getEmpruntsEnCours().taille())
+                    .append(" {");
+            for(Emprunt emprunt : utilisateur.getEmpruntsEnCours()){
+                sb.append(emprunt.getId()).append(" ")
+                        .append(emprunt.getLivre().getIdentifiant()).append(" ")
+                        .append(emprunt.getJourEmprunt()).append(" ")
+                        .append(emprunt.getJourRetourPrevu()).append(" ")
+                        .append(emprunt.getStatus()).append("}");
+            }
+            return sb.toString();
+        }
 
         int idEmprunt;
         try {
@@ -220,7 +231,13 @@ public class GestionnaireBibliotheque {
         } catch (Exception e){
             return Erreur.BAD_ARGUMENT_ERROR.name();
         }
-        return "";
+
+        Emprunt emprunt = utilisateur.rechercherEmpruntEnCours(idEmprunt);
+        if (emprunt == null)
+            return Erreur.BAD_BORROW_ERROR.name();
+        return "INFO 1 {"+ emprunt.getId() + " " + emprunt.getLivre().getIdentifiant() + " "
+                + emprunt.getJourEmprunt() + " " + emprunt.getJourRetourPrevu() + " "
+                + emprunt.getStatus() + "}";
     }
 
     public String traiterREGISTER(String argument){
