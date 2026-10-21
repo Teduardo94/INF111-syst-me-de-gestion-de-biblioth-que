@@ -158,7 +158,7 @@ public class GestionnaireBibliotheque {
         Livre livre = emprunt.getLivre();
 
         emprunt.retourner(jourRetour);
-        utilisateur.deplacerEmpruntVersTermines(emprunt);
+        utilisateur.supprimerEmpruntEnCours(idEmprunt);
 
         Reservation reservation = reservationsEnAttente.retirerPourLivre(livre.getIdentifiant());
 
@@ -169,7 +169,7 @@ public class GestionnaireBibliotheque {
             reservation.setStatus(StatutReservation.ATTRIBUEE);
             Emprunt nouvelEmprunt = new Emprunt(livre, reservation.getIdUtilisateur(),jourRetour);
             Utilisateur utilisateurReservation = utilisateurs.get(reservation.getIdUtilisateur());
-            utilisateurReservation.ajouterEmprunt(nouvelEmprunt);
+            utilisateurReservation.ajouterEmpruntEnCours(nouvelEmprunt);
             return "RESERVATION_ASSIGNED " + emprunt.getId() + " " + livre.getIdentifiant();
         }
     }
@@ -196,7 +196,7 @@ public class GestionnaireBibliotheque {
             return Erreur.BOOK_ALREADY_AVAILABLE_ERROR.name();
 
         Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
-        if(!utilisateur.ajouterReservation())
+        if(!utilisateur.peutEmprunter())
             return Erreur.BORROW_LIMIT_ERROR.name();
     }
 
@@ -213,7 +213,6 @@ public class GestionnaireBibliotheque {
         } catch (Exception e){
             return Erreur.BAD_ARGUMENT_ERROR.name();
         }
-
 
     }
 
