@@ -1,14 +1,10 @@
 package gestionnaireBibliotheque;
 
-import jdk.jfr.events.ErrorThrownEvent;
-
-import javax.swing.plaf.BorderUIResource;
-import java.util.Locale;
 import java.util.Map;
 
 public class GestionnaireBibliotheque {
     private Map<Integer,Utilisateur> utilisateurs;
-    private Map<Integer,Utilisateur> utilisateursIdentifies;
+    private Map<Integer,Utilisateur> utilisateursAuthentifies;
     private ListeLivres livres;
     private FilePrioriteReservations reservationsEnAttente;
 
@@ -61,17 +57,17 @@ public class GestionnaireBibliotheque {
             return Erreur.BAD_ARGUMENT_ERROR.name();
         }
 
-        if(utilisateursIdentifies.containsKey(idConnexion))
+        if(utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.ALREADY_AUTHENTIFIED_ERROR.name();
 
         if (!utilisateurs.containsKey(idUtilisateur))
             return Erreur.BAD_ARGUMENT_ERROR.name();
 
-        if (utilisateursIdentifies.containsValue(utilisateurs.get(idUtilisateur)))
+        if (utilisateursAuthentifies.containsValue(utilisateurs.get(idUtilisateur)))
             return Erreur.TOO_MANY_CONNECTIONS_ERROR.name();
 
         Utilisateur utilisateur = utilisateurs.get(idUtilisateur);
-        utilisateursIdentifies.put(idConnexion,utilisateur);
+        utilisateursAuthentifies.put(idConnexion,utilisateur);
 
         return "AUTHORIZED " + idUtilisateur + " " + utilisateur.getNom();
     }
@@ -93,7 +89,7 @@ public class GestionnaireBibliotheque {
     }
 
     public String traiterBORROW(int idConnexion, String argument){
-        if(!utilisateursIdentifies.containsKey(idConnexion))
+        if(!utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
 
         if(argument == null)
@@ -118,7 +114,7 @@ public class GestionnaireBibliotheque {
         if(livre.getStatus() != StatutLivre.DISPONIBLE)
             return Erreur.BOOK_NOT_AVAILABLE_ERROR.name();
 
-        Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
+        Utilisateur utilisateur = utilisateursAuthentifies.get(idConnexion);
 
         if(!utilisateur.peutEmprunter())
             return Erreur.BORROW_LIMIT_ERROR.name();
@@ -131,7 +127,7 @@ public class GestionnaireBibliotheque {
     }
 
     public String traiterRETURN(int idConnexion, String argument){
-        if(!utilisateursIdentifies.containsKey(idConnexion))
+        if(!utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
 
         if(argument == null)
@@ -149,7 +145,7 @@ public class GestionnaireBibliotheque {
             return Erreur.BAD_ARGUMENT_ERROR.name();
         }
 
-        Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
+        Utilisateur utilisateur = utilisateursAuthentifies.get(idConnexion);
 
         Emprunt emprunt = utilisateur.rechercherEmpruntEnCours(idEmprunt);
         if(emprunt == null)
@@ -175,7 +171,7 @@ public class GestionnaireBibliotheque {
     }
 
     public String traiterRESERVE(int idConnexion, String argument){
-        if(!utilisateursIdentifies.containsKey(idConnexion))
+        if(!utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
 
         if(argument == null)
@@ -195,13 +191,13 @@ public class GestionnaireBibliotheque {
         if(livre.getStatus() == StatutLivre.DISPONIBLE)
             return Erreur.BOOK_ALREADY_AVAILABLE_ERROR.name();
 
-        Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
+        Utilisateur utilisateur = utilisateursAuthentifies.get(idConnexion);
         if(!utilisateur.ajouterReservation())
             return Erreur.BORROW_LIMIT_ERROR.name();
     }
 
     public String traiterINFO(int idConnexion, String argument){
-        if(!utilisateursIdentifies.containsKey(idConnexion))
+        if(!utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
 
         if(argument == null)
@@ -254,10 +250,51 @@ public class GestionnaireBibliotheque {
     }
 
     public String traiterEXIT(int idConnexion){
-        if(!utilisateursIdentifies.containsKey(idConnexion))
+        if(!utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
-        utilisateursIdentifies.remove(idConnexion);
+        utilisateursAuthentifies.remove(idConnexion);
         return "END";
     }
 
+    public String traiterPENALTY(int idConnexion, String argument){
+        int idEmprunt, jourActuel, joursRetard;
+        double montantPenalite;
+        Utilisateur utilisateur = utilisateursAuthentifies.get(idConnexion);
+
+        if(!utilisateursAuthentifies.containsKey(idConnexion)){
+            return Erreur.AUTHENTICATION_ERROR.name();
+        }
+
+        if (argument == null) {
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+        }
+
+        String [] parts = argument.trim().split("\\s+");
+        if(parts.length != 2){
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+        }
+
+        try {
+            idEmprunt = Integer.parseInt(parts[0]);
+            jourActuel = Integer.parseInt(parts[1]);
+        }catch (Exception e){
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+        }
+
+        Emprunt emprunt = utilisateur.rechercherEmpruntEnCours(idEmprunt);
+
+        if(emprunt == null){
+            emprunt = utilisateur.rechercherEmpruntTermine(idEmprunt);
+
+            if(emprunt == null){
+                return Erreur.BAD_BORROW_ERROR.name();
+            }
+        }
+
+        joursRetard = emprunt.calculerJoursRetard(jourActuel);
+        montantPenalite = utilisateur.calculerPenalite(joursRetard);
+        String montantPenaliteFormatte = String.format("%.2f",montantPenalite);
+
+        return "PENALTY " + montantPenaliteFormatte + " " + joursRetard;
+    }
 }
