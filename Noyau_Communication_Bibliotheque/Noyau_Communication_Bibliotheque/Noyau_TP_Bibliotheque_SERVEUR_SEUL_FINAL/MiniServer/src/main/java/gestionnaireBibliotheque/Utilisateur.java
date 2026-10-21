@@ -16,6 +16,14 @@ public abstract class Utilisateur {
         this.reservations = new FilePrioriteReservations();
     }
 
+    public String getNom() {
+        return nom;
+    }
+
+    public ListeEmprunts getEmpruntsEnCours() {
+        return empruntsEnCours;
+    }
+
     public void ajouterEmpruntEnCours(Emprunt emprunt){
         empruntsEnCours.ajouter(emprunt);
     }

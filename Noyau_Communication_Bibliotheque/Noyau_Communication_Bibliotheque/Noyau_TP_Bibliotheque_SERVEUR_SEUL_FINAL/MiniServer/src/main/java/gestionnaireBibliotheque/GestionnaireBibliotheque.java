@@ -1,4 +1,5 @@
 package gestionnaireBibliotheque;
+import java.util.HashMap;
 
 import java.util.Map;
 
@@ -7,6 +8,18 @@ public class GestionnaireBibliotheque {
     private Map<Integer,Utilisateur> utilisateursAuthentifies;
     private ListeLivres livres;
     private FilePrioriteReservations reservationsEnAttente;
+
+    public GestionnaireBibliotheque() {
+        this.utilisateurs = new HashMap<>();
+        this.utilisateursIdentifies = new HashMap<>();
+        this.livres = new ListeLivres();
+        this.reservationsEnAttente = new FilePrioriteReservations();
+
+        //-----------données ajoutées pour les tests--------------
+        this.livres.ajouter(new Livre("Java", "Deitel", "Informatique"));
+        this.livres.ajouter(new Livre("CleanCode", "Martin", "Informatique"));
+        this.utilisateurs.put(101, new Etudiant(101, "Amine"));
+    }
 
     public enum Erreur{
         AUTHENTICATION_ERROR,
@@ -35,17 +48,15 @@ public class GestionnaireBibliotheque {
             case "RETURN":
                 return traiterRETURN(idConnexion, argument);
             case "RESERVE":
-                break;
+                return traiterRESERVE(idConnexion,argument);
             case "INFO":
-                break;
+                return traiterINFO(idConnexion, argument);
             case "PENALTY":
-                break;
+//                return traiterPENALTY(idConnexion,argument);
             case "EXIT":
                 return traiterEXIT(idConnexion);
-            default:
-                return "";
         }
-        return"";
+        return"the switch case was not accessed";
     }
 
     public String traiterID(int idConnexion, String argument){
@@ -154,7 +165,7 @@ public class GestionnaireBibliotheque {
         Livre livre = emprunt.getLivre();
 
         emprunt.retourner(jourRetour);
-        utilisateur.deplacerEmpruntVersTermines(emprunt);
+        utilisateur.supprimerEmpruntEnCours(idEmprunt);
 
         Reservation reservation = reservationsEnAttente.retirerPourLivre(livre.getIdentifiant());
 
@@ -165,7 +176,7 @@ public class GestionnaireBibliotheque {
             reservation.setStatus(StatutReservation.ATTRIBUEE);
             Emprunt nouvelEmprunt = new Emprunt(livre, reservation.getIdUtilisateur(),jourRetour);
             Utilisateur utilisateurReservation = utilisateurs.get(reservation.getIdUtilisateur());
-            utilisateurReservation.ajouterEmprunt(nouvelEmprunt);
+            utilisateurReservation.ajouterEmpruntEnCours(nouvelEmprunt);
             return "RESERVATION_ASSIGNED " + emprunt.getId() + " " + livre.getIdentifiant();
         }
     }
@@ -192,16 +203,35 @@ public class GestionnaireBibliotheque {
             return Erreur.BOOK_ALREADY_AVAILABLE_ERROR.name();
 
         Utilisateur utilisateur = utilisateursAuthentifies.get(idConnexion);
-        if(!utilisateur.ajouterReservation())
-            return Erreur.BORROW_LIMIT_ERROR.name();
+
+        if(utilisateur.possedeReservationEnAttentePourLivre(idLivre))
+            return Erreur.BAD_ARGUMENT_ERROR.name();
+
+        Reservation nouvelleRes = new Reservation(livre,utilisateur.getId(),utilisateur.getTypeUtilisateur());
+        if (!utilisateur.ajouterReservation(nouvelleRes))
+            return Erreur.RESERVATION_LIMIT_ERROR.name();
+
+        reservationsEnAttente.ajouter(nouvelleRes);
+        livre.setStatus(StatutLivre.RESERVE);
+        return "RESERVATION_OK " + nouvelleRes.getId() + " " + livre.getIdentifiant();
     }
 
     public String traiterINFO(int idConnexion, String argument){
         if(!utilisateursAuthentifies.containsKey(idConnexion))
             return Erreur.AUTHENTICATION_ERROR.name();
 
-        if(argument == null)
-            return Erreur.BAD_ARGUMENT_ERROR.name();
+        Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
+        if(argument == null){
+            StringBuilder sb = new StringBuilder().append("INFO ").append(utilisateur.getEmpruntsEnCours().taille());
+            for(Emprunt emprunt : utilisateur.getEmpruntsEnCours()){
+                sb.append(" {").append(emprunt.getId()).append(" ")
+                        .append(emprunt.getLivre().getIdentifiant()).append(" ")
+                        .append(emprunt.getJourEmprunt()).append(" ")
+                        .append(emprunt.getJourRetourPrevu()).append(" ")
+                        .append(emprunt.getStatus()).append("}");
+            }
+            return sb.toString();
+        }
 
         int idEmprunt;
         try {
@@ -210,7 +240,12 @@ public class GestionnaireBibliotheque {
             return Erreur.BAD_ARGUMENT_ERROR.name();
         }
 
-
+        Emprunt emprunt = utilisateur.rechercherEmpruntEnCours(idEmprunt);
+        if (emprunt == null)
+            return Erreur.BAD_BORROW_ERROR.name();
+        return "INFO 1 {"+ emprunt.getId() + " " + emprunt.getLivre().getIdentifiant() + " "
+                + emprunt.getJourEmprunt() + " " + emprunt.getJourRetourPrevu() + " "
+                + emprunt.getStatus() + "}";
     }
 
     public String traiterREGISTER(String argument){
