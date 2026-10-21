@@ -31,6 +31,14 @@ public class Emprunt {
         return id;
     }
 
+    public int getJourRetourPrevu() {
+        return jourRetourPrevu;
+    }
+
+    public Livre getLivre() {
+        return livre;
+    }
+
     public boolean estEnRetard(int jourActuel){return jourRetourPrevu < jourActuel;}
 
     public int calculerJoursRetard(int jourActuel){

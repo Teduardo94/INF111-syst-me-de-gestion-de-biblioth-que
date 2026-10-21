@@ -36,6 +36,22 @@ public class Livre {
         return identifiant;
     }
 
+    public String getAuteur() {
+        return auteur;
+    }
+
+    public String getCategorie() {
+        return categorie;
+    }
+
+    public StatutLivre getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatutLivre status) {
+        this.status = status;
+    }
+
     @Override
     public String toString(){
         return String.format("titre: %s%n- auteur: %s%n- catégorie: %s%n- identifiant: %d%n- status: %s",

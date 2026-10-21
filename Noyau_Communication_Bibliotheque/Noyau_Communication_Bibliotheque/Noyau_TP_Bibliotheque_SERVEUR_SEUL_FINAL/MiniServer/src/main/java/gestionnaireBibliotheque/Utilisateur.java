@@ -100,20 +100,12 @@ public abstract class Utilisateur {
 
     @Override
     public String toString() {
-        int nbreReservationEnAttente = 0;
-        for (int i = 0; i < reservations.taille(); i++){
-            if (reservations.taille() < MAX_RESERVATIONS){
-                nbreReservationEnAttente++;
-            }
-        }
-
         return "Utilisateur{" +
                 "type : '" + getTypeUtilisateur() + '\'' +
                 ", id : '" + id + '\'' +
                 ", nom : '" + nom + '\'' +
                 ", nombre d'emprunts en cours : '" + empruntsEnCours.taille() + '\'' +
                 ", nombre d'emprunts termines : '" + empruntsTermines.taille() + '\'' +
-                ", reservations en attente : '" + nbreReservationEnAttente + '\'' +
                 '}';
     }
 }
