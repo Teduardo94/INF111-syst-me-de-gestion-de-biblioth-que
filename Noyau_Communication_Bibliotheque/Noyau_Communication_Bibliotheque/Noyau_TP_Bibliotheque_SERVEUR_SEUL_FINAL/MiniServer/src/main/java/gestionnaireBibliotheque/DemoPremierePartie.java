@@ -1,5 +1,4 @@
 package gestionnaireBibliotheque;
-
 public class DemoPremierePartie {
     public static void main(String[] args) {
         System.out.println("TEST DES INFORMATIONS D'UN LIVRE");
@@ -43,5 +42,6 @@ public class DemoPremierePartie {
         }
 
         System.out.println("\nTEST DE L'ORDRE DE PRIORITÉ DES RÉSERVATIONS");
+
     }
 }

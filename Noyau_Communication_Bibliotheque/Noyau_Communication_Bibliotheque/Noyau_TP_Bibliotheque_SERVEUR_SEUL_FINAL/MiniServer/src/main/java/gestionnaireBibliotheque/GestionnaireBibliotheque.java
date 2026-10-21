@@ -1,9 +1,5 @@
 package gestionnaireBibliotheque;
-
-import jdk.jfr.events.ErrorThrownEvent;
-
-import javax.swing.plaf.BorderUIResource;
-import java.util.Locale;
+import java.util.HashMap;
 import java.util.Map;
 
 public class GestionnaireBibliotheque {
@@ -11,6 +7,18 @@ public class GestionnaireBibliotheque {
     private Map<Integer,Utilisateur> utilisateursIdentifies;
     private ListeLivres livres;
     private FilePrioriteReservations reservationsEnAttente;
+
+    public GestionnaireBibliotheque() {
+        this.utilisateurs = new HashMap<>();
+        this.utilisateursIdentifies = new HashMap<>();
+        this.livres = new ListeLivres();
+        this.reservationsEnAttente = new FilePrioriteReservations();
+
+        //-----------données ajoutées pour les tests--------------
+        this.livres.ajouter(new Livre("Java", "Deitel", "Informatique"));
+        this.livres.ajouter(new Livre("CleanCode", "Martin", "Informatique"));
+        this.utilisateurs.put(101, new Etudiant(101, "Amine"));
+    }
 
     public enum Erreur{
         AUTHENTICATION_ERROR,
@@ -43,13 +51,11 @@ public class GestionnaireBibliotheque {
             case "INFO":
                 return traiterINFO(idConnexion, argument);
             case "PENALTY":
-                break;
+//                return traiterPENALTY(idConnexion,argument);
             case "EXIT":
                 return traiterEXIT(idConnexion);
-            default:
-                return "";
         }
-        return"";
+        return"the switch case was not accessed";
     }
 
     public String traiterID(int idConnexion, String argument){
@@ -196,15 +202,17 @@ public class GestionnaireBibliotheque {
             return Erreur.BOOK_ALREADY_AVAILABLE_ERROR.name();
 
         Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
-        if(!utilisateur.peutEmprunter())
-            return Erreur.BORROW_LIMIT_ERROR.name();
 
         if(utilisateur.possedeReservationEnAttentePourLivre(idLivre))
             return Erreur.BAD_ARGUMENT_ERROR.name();
 
         Reservation nouvelleRes = new Reservation(livre,utilisateur.getId(),utilisateur.getTypeUtilisateur());
+        if (!utilisateur.ajouterReservation(nouvelleRes))
+            return Erreur.RESERVATION_LIMIT_ERROR.name();
+
         reservationsEnAttente.ajouter(nouvelleRes);
-        return "RESERVATION_OK" + nouvelleRes.getId() + " " + livre.getIdentifiant();
+        livre.setStatus(StatutLivre.RESERVE);
+        return "RESERVATION_OK " + nouvelleRes.getId() + " " + livre.getIdentifiant();
     }
 
     public String traiterINFO(int idConnexion, String argument){
@@ -213,10 +221,9 @@ public class GestionnaireBibliotheque {
 
         Utilisateur utilisateur = utilisateursIdentifies.get(idConnexion);
         if(argument == null){
-            StringBuilder sb = new StringBuilder().append("INFO ").append(utilisateur.getEmpruntsEnCours().taille())
-                    .append(" {");
+            StringBuilder sb = new StringBuilder().append("INFO ").append(utilisateur.getEmpruntsEnCours().taille());
             for(Emprunt emprunt : utilisateur.getEmpruntsEnCours()){
-                sb.append(emprunt.getId()).append(" ")
+                sb.append(" {").append(emprunt.getId()).append(" ")
                         .append(emprunt.getLivre().getIdentifiant()).append(" ")
                         .append(emprunt.getJourEmprunt()).append(" ")
                         .append(emprunt.getJourRetourPrevu()).append(" ")
