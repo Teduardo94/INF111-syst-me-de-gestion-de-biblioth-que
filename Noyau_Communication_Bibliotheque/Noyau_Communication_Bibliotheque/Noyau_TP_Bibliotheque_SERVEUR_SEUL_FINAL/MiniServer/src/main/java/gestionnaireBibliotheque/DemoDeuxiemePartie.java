@@ -9,11 +9,9 @@ public class DemoDeuxiemePartie {
     public static void main(String[] args) {
         clavier.useLocale(Locale.ENGLISH);
         GestionnaireBibliotheque gestionnaire = new GestionnaireBibliotheque();
-        int idConnexion = 1; // ID de connexion unique pour ce client de test
-
-
-
+        int idConnexion = 1;
         while (true) {
+            menu();
             System.out.print("\nEntrez votre commande : ");
             String ligne = clavier.nextLine().trim();
 
@@ -43,7 +41,7 @@ public class DemoDeuxiemePartie {
     }
 
     private static void menu(){
-        System.out.println("Commandes disponibles : ");
+        System.out.println("\n\n\nCommandes disponibles : ");
         System.out.println(" - REGISTER <id> <ETUDIANT/PERSONNEL/PROFESSEUR> <nom>");
         System.out.println(" - ID <id>");
         System.out.println(" - BOOKS");
