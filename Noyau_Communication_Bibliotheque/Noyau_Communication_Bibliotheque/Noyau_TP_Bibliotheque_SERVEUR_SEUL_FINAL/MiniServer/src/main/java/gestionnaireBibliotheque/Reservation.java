@@ -46,7 +46,7 @@ public class Reservation implements Comparable<Reservation> {
 
     @Override
     public int compareTo(Reservation obj) {
-        int comparerType = obj.typeUtilisateur.compareTo(this.typeUtilisateur);
+        int comparerType = Integer.signum(obj.typeUtilisateur.compareTo(this.typeUtilisateur));
         if (comparerType != 0)
             return comparerType;
         return Integer.compare(this.ordreReservation, obj.ordreReservation);
