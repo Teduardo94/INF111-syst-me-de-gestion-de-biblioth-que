@@ -39,14 +39,15 @@ public class Main {
         String saisie;
 
         Serveur serveur = new Serveur(Config.PORT_SERVEUR);
-        if (serveur.demarrer()) {
 
+        if (serveur.demarrer()) {
+            System.out.println("Serveur demaré et à l'ecoute " );
             System.out.println("Saisissez EXIT pour arreter le serveur.");
             saisie = clavier.nextLine();
             while (!"EXIT".equals(saisie)) {
                 System.out.println("??? Saisissez EXIT pour arreter le serveur.");
                 saisie = clavier.nextLine();
-            }System.out.println("Serveur demaré et à l'ecoute " );
+            }
         }
 
         serveur.arreter();

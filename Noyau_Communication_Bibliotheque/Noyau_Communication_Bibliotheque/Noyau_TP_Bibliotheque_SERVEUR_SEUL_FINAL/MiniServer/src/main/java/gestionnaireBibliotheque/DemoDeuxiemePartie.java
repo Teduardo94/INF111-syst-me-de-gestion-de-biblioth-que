@@ -51,6 +51,6 @@ public class DemoDeuxiemePartie {
         System.out.println(" - INFO [idEmprunt]");
         System.out.println(" - PENALTY <idEmprunt> <jourActuel>");
         System.out.println(" - EXIT");
-        System.out.println(" - q (Quitter la démo)\n");
+        System.out.println(" - q (Quitter démo)\n");
     }
 }

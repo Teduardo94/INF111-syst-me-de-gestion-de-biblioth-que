@@ -46,15 +46,12 @@ public class Main {
 		}
 		System.out.println("Vous etes connectes au serveur à l'adresse " + client.getAdrServeur()
 				+ " sur le port " + client.getPortServeur());
-		System.out.println("Le serveur vous renvoie votre texte converti en majuscules");
-
 		System.out.println("Saisissez vos textes (EXIT pour quitter) :");
 		do {
 			saisie = clavier.nextLine();
 			client.envoyer(saisie);
 		}while (!"EXIT".equals(saisie));
 		//Lorsque le client envoie "EXIT", le serveur répond "END." et le gestionnaire d'événement déconnecte le client
-
 		//client.deconnecter();
 	}
 }
