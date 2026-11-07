@@ -19,6 +19,8 @@ public class GestionnaireBibliotheque {
         this.livres.ajouter(new Livre("Java", "Deitel", "Informatique"));
         this.livres.ajouter(new Livre("CleanCode", "Martin", "Informatique"));
         this.utilisateurs.put(101, new Etudiant(101, "Amine"));
+        this.utilisateurs.put(201, new Professeur(201,"Jean"));
+        this.utilisateurs.put(301, new Personnel(301,"Patrick"));
     }
 
     public enum Erreur{
@@ -221,7 +223,7 @@ public class GestionnaireBibliotheque {
             return Erreur.AUTHENTICATION_ERROR.name();
 
         Utilisateur utilisateur = utilisateursAuthentifies.get(idConnexion);
-        if(argument == null){
+        if(argument == null || argument.trim().isEmpty()){
             StringBuilder sb = new StringBuilder().append("INFO ").append(utilisateur.getEmpruntsEnCours().taille());
             for(Emprunt emprunt : utilisateur.getEmpruntsEnCours()){
                 sb.append(" {").append(emprunt.getId()).append(" ")
